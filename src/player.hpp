@@ -1,6 +1,6 @@
 #pragma once
-#include "golf_course.h"
-#include "common.h"
+#include "golf_course.hpp"
+#include "common.hpp"
 #include <boost/format.hpp>
 #include <boost/random/variate_generator.hpp>
 #include <boost/random/mersenne_twister.hpp>

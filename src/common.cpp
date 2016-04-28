@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 #include <boost/thread/thread.hpp>
 #include <boost/thread/xtime.hpp>
 

@@ -4,9 +4,9 @@
  * modify this file.
  */
 
-#include "common.h"
-#include "player.h"
-#include "golf_course.h"
+#include "common.hpp"
+#include "player.hpp"
+#include "golf_course.hpp"
 #include <sstream>
 #include <fstream>
 #include <cstdlib>

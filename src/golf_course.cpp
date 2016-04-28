@@ -1,4 +1,4 @@
-#include "golf_course.h"
+#include "golf_course.hpp"
 
 using namespace std;
 
