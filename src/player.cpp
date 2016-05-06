@@ -63,9 +63,10 @@ void Player::play_course() {
   double turnaround_time = turnaround.sec + turnaround.nsec / 1e9;
 
   atomic_output(
-      format("----- Player #%d (%s) finished. Turnaround time = %f seconds.")
+      format("----- Player #%d (%s) party %d finished. Turnaround time = %f seconds.")
           % id
           % name
+          % party_id
           % turnaround_time);
 }
 
