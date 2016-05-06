@@ -33,6 +33,10 @@ Player::Player(
       random_number_generator,
       boost::lognormal_distribution<>(mean, sigma));
 
+  if (find(golf_course->parties.begin(), golf_course->parties.end(), party_id) == golf_course->parties.end()) {
+      golf_course->parties.push_back(party_id);
+      golf_course->party_barrier.push_back(new boost::barrier(4));
+  }
   atomic_output(
       format("+++++ Player #%d (%s) added to party %d")
           % id
@@ -76,6 +80,9 @@ void Player::play_hole(size_t hole) {
             % name
             % hole);
   }
+
+  bool r = golf_course->party_barrier[party_id]->wait();
+  if (r) announce_playing(hole);
 
   // Syntax is a little funny because we have a pointer to a generator.
   // Normally, you just call generator()

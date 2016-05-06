@@ -1,6 +1,11 @@
 #pragma once
+#include <boost/thread/thread.hpp>
+#include <boost/thread/barrier.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/thread/xtime.hpp>
 #include <vector>
+
+using namespace std;
 
 
 class GolfCourse {
@@ -24,6 +29,9 @@ public:
   // TODO: This is where you will define your barriers, condition variables, and
   // any other shared variables or synchronization primitives. The variables are
   // currently public to keep it simple.
+  vector<boost::barrier*> party_barrier;
+  vector<int> parties;
+  vector<boost::mutex*> hole_lock;
 
   /**
    * Vector that gets populated with each golfer's turnaround time as they
