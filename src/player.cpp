@@ -36,6 +36,7 @@ Player::Player(
   if (find(golf_course->parties.begin(), golf_course->parties.end(), party_id) == golf_course->parties.end()) {
       golf_course->parties.push_back(party_id);
       golf_course->party_barrier.push_back(new boost::barrier(4));
+      golf_course->last_ct.push_back(4);
   }
   atomic_output(
       format("+++++ Player #%d (%s) added to party %d")
@@ -73,7 +74,7 @@ void Player::play_hole(size_t hole) {
   // This is the function where you will spend the most effort. I left a few
   // fragments from my solution, but it will need lots of modification.
 
-  if (DEBUG) {
+  if (golf_course->party_at_hole[hole] != -1 && golf_course->party_at_hole[hole] != party_id) {
     atomic_output(
         format("##### Player #%d (%s) waiting for hole %d")
             % id
@@ -82,6 +83,14 @@ void Player::play_hole(size_t hole) {
   }
 
   bool r = golf_course->party_barrier[party_id]->wait();
+
+  { boost::mutex::scoped_lock lock(*(golf_course->hole_lock[hole]));
+    while (golf_course->party_at_hole[hole] != -1 && golf_course->party_at_hole[hole] != party_id) {
+      golf_course->hole_signalling[hole]->wait(lock);
+    }
+    golf_course->party_at_hole[hole] = party_id;
+  }
+
   if (r) announce_playing(hole);
 
   // Syntax is a little funny because we have a pointer to a generator.
@@ -104,6 +113,23 @@ void Player::play_hole(size_t hole) {
         format("$$$$$ Player #%d (%s) notified.")
             % id
             % name);
+  }
+
+  /* A special condition occours at the last hole:
+   *  A golfer may leave if they are done before the others
+   */
+  if (hole == 17) {
+    boost::mutex::scoped_lock lock(*(golf_course->last_lock));
+    golf_course->last_ct[party_id]--;
+    if (golf_course->last_ct[party_id]) return;
+    r = true;
+  }
+  else golf_course->party_barrier[party_id]->wait();
+
+  if (r) {
+      announce_leaving(hole);
+      golf_course->party_at_hole[hole] = -1;
+      golf_course->hole_signalling[hole]->notify_all();
   }
 }
 

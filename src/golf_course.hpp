@@ -2,6 +2,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/barrier.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 #include <boost/thread/xtime.hpp>
 #include <vector>
 
@@ -32,6 +33,10 @@ public:
   vector<boost::barrier*> party_barrier;
   vector<int> parties;
   vector<boost::mutex*> hole_lock;
+  vector<int> party_at_hole;
+  vector<boost::condition_variable*> hole_signalling;
+  boost::mutex* last_lock;
+  vector<int> last_ct;
 
   /**
    * Vector that gets populated with each golfer's turnaround time as they
